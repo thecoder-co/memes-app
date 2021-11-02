@@ -9,10 +9,10 @@ Future<Map> getMemes({
 
   String? baseUrl = 'https://meme-api.herokuapp.com/gimme';
   if (subReddit != null) {
-    baseUrl + '/$subReddit';
+    baseUrl += '/$subReddit';
   }
   if (count != null) {
-    baseUrl + '/$count';
+    baseUrl += '/$count';
     isLarge = true;
   }
 
@@ -87,6 +87,19 @@ class MemeSmall {
         "ups": ups,
         "preview": List<dynamic>.from(preview!.map((x) => x)),
       };
+  Meme toMeme() {
+    return Meme(
+      author: author!,
+      nsfw: nsfw!,
+      postLink: postLink!,
+      preview: preview!,
+      spoiler: spoiler!,
+      subreddit: subreddit!,
+      title: title!,
+      ups: ups!,
+      url: url!,
+    );
+  }
 }
 
 MemeBig memeBigFromJson(String str) => MemeBig.fromJson(json.decode(str));
@@ -137,14 +150,14 @@ class Meme {
   List<String>? preview;
 
   factory Meme.fromJson(Map<String, dynamic> json) => Meme(
-        postLink: json["postLink"],
-        subreddit: json["subreddit"],
-        title: json["title"],
-        url: json["url"],
-        nsfw: json["nsfw"],
-        spoiler: json["spoiler"],
-        author: json["author"],
-        ups: json["ups"],
+        postLink: json["postLink"]!,
+        subreddit: json["subreddit"]!!,
+        title: json["title"]!,
+        url: json["url"]!,
+        nsfw: json["nsfw"]!,
+        spoiler: json["spoiler"]!,
+        author: json["author"]!,
+        ups: json["ups"]!,
         preview: List<String>.from(json["preview"].map((x) => x)),
       );
 

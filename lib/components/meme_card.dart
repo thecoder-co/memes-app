@@ -1,3 +1,4 @@
+import 'package:cached_network_image_builder/cached_network_image_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_downloader/image_downloader.dart';
@@ -29,9 +30,16 @@ class MemeCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                meme!.url!,
-                fit: BoxFit.contain,
+              child: CachedNetworkImageBuilder(
+                url: meme!.url!,
+                builder: (image) {
+                  return Center(
+                    child: Image.file(
+                      image,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(
@@ -133,7 +141,6 @@ class MemeCard extends StatelessWidget {
                   icon: const Icon(Icons.share),
                   onPressed: () async {
                     try {
-                      // Saved with this method.
                       var imageId =
                           await ImageDownloader.downloadImage("${meme!.url}");
                       if (imageId == null) {
@@ -141,8 +148,7 @@ class MemeCard extends StatelessWidget {
                       }
 
                       var path = await ImageDownloader.findPath(imageId);
-                      Share.shareFiles(['$path'],
-                          text: '${meme!.title} \n ${meme!.url}');
+                      Share.shareFiles(['$path'], text: '${meme!.title}');
                     } catch (error) {
                       Get.snackbar('Failed', 'Unable to share meme');
                     }

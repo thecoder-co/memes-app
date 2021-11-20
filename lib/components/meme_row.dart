@@ -5,6 +5,7 @@ import 'package:memes/apis/get_meme.dart';
 import 'package:memes/constants.dart';
 import 'package:memes/screens/meme_details.dart';
 import 'package:memes/screens/subreddit_screen.dart';
+import 'package:cached_network_image_builder/cached_network_image_builder.dart';
 
 class MemeRow extends StatelessWidget {
   final String? subreddit;
@@ -37,20 +38,23 @@ class MemeRow extends StatelessWidget {
         SizedBox(
           height: 300,
           child: FutureBuilder(
-            future: getMemes(count: 50, subReddit: subreddit),
+            future: getMemes(count: 10, subReddit: subreddit),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 MemeBig memeData = snapshot.data['data'];
 
                 return ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 51,
+                  itemCount: 11,
+                  controller: ScrollController(),
+                  restorationId: memeData.toString(),
+                  addAutomaticKeepAlives: true,
                   shrinkWrap: true,
                   separatorBuilder: (context, int index) {
                     return const SizedBox(width: 0, height: 20);
                   },
                   itemBuilder: (BuildContext context, int index) {
-                    return index != 50
+                    return index != 10
                         ? Padding(
                             padding: const EdgeInsets.only(
                               left: 10.0,
@@ -66,64 +70,82 @@ class MemeRow extends StatelessWidget {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  memeData.memes![index].url!,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    }
-                                    return SizedBox(
-                                      height: 300,
-                                      width: 300,
-                                      child: Card(
-                                        elevation: 0,
-                                        color: appbarColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            color: appbarTextColor,
-                                            value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    loadingProgress
-                                                        .expectedTotalBytes!
-                                                : null,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  errorBuilder: (context, exception, index) {
-                                    return SizedBox(
-                                      height: 300,
-                                      width: 300,
-                                      child: Card(
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        color: appbarColor,
-                                        child: Center(
-                                          child: Text(
-                                            'Unable to load meme',
-                                            style: GoogleFonts.patrickHand(
-                                              color: appbarTextColor,
-                                              fontSize: 20,
+                                child: CachedNetworkImageBuilder(
+                                  url: memeData.memes![index].url!,
+                                  builder: (image) {
+                                    return Center(
+                                      child: Image.file(
+                                        image,
+                                        errorBuilder:
+                                            (context, exception, index) {
+                                          return SizedBox(
+                                            height: 300,
+                                            width: 300,
+                                            child: Card(
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  10,
+                                                ),
+                                              ),
+                                              color: appbarColor,
+                                              child: Center(
+                                                child: Text(
+                                                  'Unable to load meme',
+                                                  style:
+                                                      GoogleFonts.patrickHand(
+                                                    color: appbarTextColor,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
+                                          );
+                                        },
                                       ),
                                     );
                                   },
+
+                                  placeHolder: SizedBox(
+                                    height: 300,
+                                    width: 300,
+                                    child: Card(
+                                      elevation: 0,
+                                      color: appbarColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          color: appbarTextColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Optional error widget
+                                  errorWidget: SizedBox(
+                                    height: 300,
+                                    width: 300,
+                                    child: Card(
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          10,
+                                        ),
+                                      ),
+                                      color: appbarColor,
+                                      child: Center(
+                                        child: Text(
+                                          'Unable to load meme',
+                                          style: GoogleFonts.patrickHand(
+                                            color: appbarTextColor,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),

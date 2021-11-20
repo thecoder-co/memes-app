@@ -107,6 +107,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: appbarColor,
       ),
       body: SingleChildScrollView(
+        controller: ScrollController(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
